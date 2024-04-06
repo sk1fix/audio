@@ -61,6 +61,18 @@ class subWindow(QtWidgets.QDialog):
         self.slider.setTickPosition(QtWidgets.QSlider.TicksBelow)  
         layout.addWidget(self.slider)
 
+        self.slider_time = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+        self.slider_time.setRange(0, 100)  
+        layout.addWidget(self.slider_time)
+        self.timer = QtCore.QTimer(self)
+        self.timer.timeout.connect(self.update_slider)
+        self.timer.start(1000)  
+        self.setLayout(layout)
+
+        self.button_repeat = QtWidgets.QPushButton("Повторить")
+        self.button_repeat.clicked.connect(self.repeat)
+        layout.addWidget(self.button_repeat)
+
         self.setLayout(layout)
     def left_skip(self):
         pass
@@ -73,6 +85,16 @@ class subWindow(QtWidgets.QDialog):
     
     def volume(self):
         pass
+    
+    def repeat(self):
+        pass
+    
+    def update_slider(self):
+        current_value = self.slider_time.value()
+        if current_value < self.slider_time.maximum():
+            self.slider_time.setValue(current_value + 1)
+        else:
+            self.slider_time.setValue(0)  
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = Window()
