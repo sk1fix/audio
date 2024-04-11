@@ -2,7 +2,7 @@ import sys
 from main import Ui_MainWindow
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PyQt5.QtCore import QUrl, QTimer
+from PyQt5.QtCore import QUrl, QTimer, QTime
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 import os
@@ -13,11 +13,16 @@ class Window(QtWidgets.QMainWindow, Ui_MainWindow):
         super().__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
+        # self.setStyleSheet("background-image: url('')")
         self.folderpath = None
         self.menu = None
         self.count = 0
         self.current_index = 0
         self.player = QMediaPlayer()
+        self.time_vid = self.ui.label
+        self.timer_l = QTimer()
+        self.timer_l.timeout.connect(self.update_timer)
+        self.timer_l.start(1000)
         self.ui.ope_folder.clicked.connect(self.select_folder)
         self.ui.left.clicked.connect(self.left_skip)
         self.ui.right.clicked.connect(self.right_skip)
@@ -82,8 +87,10 @@ class Window(QtWidgets.QMainWindow, Ui_MainWindow):
     def repeat(self):
         self.play_current()
 
-    def volume_sound(self):
-        pass
+    def update_timer(self):
+        current_time = QTime(0, 0)
+        current_time = current_time.addMSecs(self.player.position())
+        self.time_vid.setText(current_time.toString("mm:ss"))
 
     def update_slider(self):
         if self.player.duration() > 0:

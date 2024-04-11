@@ -70,6 +70,14 @@ class Ui_MainWindow(object):
         self.loop.setIcon(icon4)
         self.loop.setIconSize(QtCore.QSize(36, 36))
         self.loop.setObjectName("loop")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(160, 220, 161, 81))
+        self.label.setStyleSheet("font: 48pt \"MS Shell Dlg 2\";\n"
+"\n"
+"\n"
+"")
+        self.label.setText("")
+        self.label.setObjectName("label")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 480, 21))
