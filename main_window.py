@@ -2,7 +2,7 @@ import sys
 from main import Ui_MainWindow
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PyQt5.QtCore import QUrl
+from PyQt5.QtCore import QUrl, QTimer
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
 import os
@@ -23,9 +23,6 @@ class Window(QtWidgets.QMainWindow, Ui_MainWindow):
         self.ui.right.clicked.connect(self.right_skip)
         self.ui.pause.clicked.connect(self.pause_b)
         self.ui.loop.clicked.connect(self.repeat)
-        self.time_slider = self.ui.time_line
-        self.timer = QtCore.QTimer(self)
-        self.timer.start(1000)
         self.volume = self.ui.volume
         self.volume.setMinimum(0)
         self.volume.setMaximum(100)
@@ -35,6 +32,11 @@ class Window(QtWidgets.QMainWindow, Ui_MainWindow):
         self.volume.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.volume.valueChanged.connect(self.volume_ch)
         self.player.mediaStatusChanged.connect(self.media_status_changed)
+        self.time_slider = self.ui.time_line
+        self.time_slider.sliderMoved.connect(self.set_position)
+        self.timer = QtCore.QTimer(self)
+        self.timer.timeout.connect(self.update_slider)
+        self.timer.start(1000)
 
     def media_status_changed(self, status):
         if status == QMediaPlayer.EndOfMedia:
@@ -50,7 +52,7 @@ class Window(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def play_current(self):
         url = QUrl.fromLocalFile(
-            self.folderpath+'/'+self.mp3_files[self.current_index])
+            self.folderpath + '/' + self.mp3_files[self.current_index])
         content = QMediaContent(url)
         self.player.setMedia(content)
         self.player.play()
@@ -82,6 +84,16 @@ class Window(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def volume_sound(self):
         pass
+
+    def update_slider(self):
+        if self.player.duration() > 0:
+            pos = self.player.position()
+            dur = self.player.duration()
+            self.time_slider.setMaximum(dur)
+            self.time_slider.setValue(pos)
+
+    def set_position(self, position):
+        self.player.setPosition(position)
 
 
 if __name__ == '__main__':
