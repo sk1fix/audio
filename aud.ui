@@ -16,8 +16,11 @@
   <property name="autoFillBackground">
    <bool>false</bool>
   </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: qlineargradient(spread:pad, x1:1, y1:1, x2:0, y2:0, stop:0 rgba(81, 0, 135, 255), stop:0.427447 rgba(41, 61, 132, 235), stop:1 rgba(155, 79, 165, 255));</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QPushButton" name="pushButton">
+   <widget class="QPushButton" name="ope_folder">
     <property name="geometry">
      <rect>
       <x>225</x>
@@ -41,7 +44,7 @@
      </size>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_2">
+   <widget class="QPushButton" name="pause">
     <property name="geometry">
      <rect>
       <x>225</x>
@@ -65,7 +68,7 @@
      </size>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_3">
+   <widget class="QPushButton" name="left">
     <property name="geometry">
      <rect>
       <x>130</x>
@@ -90,7 +93,7 @@
      </size>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_4">
+   <widget class="QPushButton" name="right">
     <property name="geometry">
      <rect>
       <x>320</x>
@@ -115,7 +118,7 @@
      </size>
     </property>
    </widget>
-   <widget class="QSlider" name="horizontalSlider">
+   <widget class="QSlider" name="time_line">
     <property name="geometry">
      <rect>
       <x>130</x>
@@ -128,7 +131,7 @@
      <enum>Qt::Horizontal</enum>
     </property>
    </widget>
-   <widget class="QSlider" name="verticalSlider">
+   <widget class="QSlider" name="volume">
     <property name="geometry">
      <rect>
       <x>430</x>
@@ -141,7 +144,7 @@
      <enum>Qt::Vertical</enum>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButton_5">
+   <widget class="QPushButton" name="loop">
     <property name="geometry">
      <rect>
       <x>225</x>
@@ -179,8 +182,6 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources>
-  <include location="des.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

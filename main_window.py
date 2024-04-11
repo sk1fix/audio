@@ -1,100 +1,87 @@
 import sys
-
+from main import Ui_MainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+from PyQt5.QtCore import QUrl
 from PyQt5 import QtWidgets
 from PyQt5 import QtCore
+import os
 
-class Window(QtWidgets.QMainWindow):
+
+class Window(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self) -> None:
         super().__init__()
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
         self.folderpath = None
         self.menu = None
-        self.label = QtWidgets.QLabel("Выберите папку с аудиофайлами")
-        self.select_folder_button = QtWidgets.QPushButton("Выбрать папку")
-        self.select_folder_button.clicked.connect(self.select_folder)
-
-
-        layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(self.label)
-        layout.addWidget(self.select_folder_button)
-
-        central_widget = QtWidgets.QWidget()
-        central_widget.setLayout(layout)
-        self.setCentralWidget(central_widget)
+        self.current_index = 0
+        self.player = QMediaPlayer()
+        self.ui.ope_folder.clicked.connect(self.select_folder)
+        self.ui.left.clicked.connect(self.left_skip)
+        self.ui.right.clicked.connect(self.right_skip)
+        self.ui.pause.clicked.connect(self.pause_b)
+        self.ui.loop.clicked.connect(self.repeat)
+        self.time_slider = self.ui.time_line
+        self.timer = QtCore.QTimer(self)
+        self.timer.timeout.connect(self.update_slider)
+        self.timer.start(1000)
+        self.volume = self.ui.volume
+        self.volume.setMinimum(0)
+        self.volume.setMaximum(100)
+        self.volume.setValue(50)
+        self.player.setVolume(50)
+        self.volume.setTickInterval(10)
+        self.volume.setTickPosition(QtWidgets.QSlider.TicksBelow)
+        self.volume.valueChanged.connect(self.volume_ch)
 
     def select_folder(self):
         self.folderpath = QtWidgets.QFileDialog.getExistingDirectory(
             self, 'Выберите папку')
         QtWidgets.QMessageBox.information(
             self, 'Папка выбрана', self.folderpath)
-        if self.folderpath:
-            self.menu = subWindow(self)
-            self.menu.show()
+        self.files = os.listdir(self.folderpath)
+        self.mp3_files = [file for file in self.files if file.endswith('.mp3')]
 
+    def play_current(self):
+        url = QUrl.fromLocalFile(
+            self.folderpath+'/'+self.mp3_files[self.current_index])
+        content = QMediaContent(url)
+        self.player.setMedia(content)
+        self.player.play()
 
-class subWindow(QtWidgets.QDialog):
-    def __init__(self, Main: Window = None) -> None:
-        super(subWindow, self).__init__(Main)
-        self.setModal(True)
-        self.main_window = Main
-        if Main is not None:
-            self.Main = Main
-
-        layout = QtWidgets.QVBoxLayout()
-
-        self.button_left = QtWidgets.QPushButton("Назад")
-        self.button_left.clicked.connect(self.left_skip)
-        layout.addWidget(self.button_left)
-
-        self.button_right = QtWidgets.QPushButton("Вперед")
-        self.button_right.clicked.connect(self.pause)
-        layout.addWidget(self.button_right)
-
-        self.button_pause = QtWidgets.QPushButton("Пауза")
-        self.button_pause.clicked.connect(self.pause)
-        layout.addWidget(self.button_pause) 
-
-        self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        self.slider.setMinimum(0)
-        self.slider.setMaximum(100)
-        self.slider.setValue(50)  
-        self.slider.setTickInterval(10)  
-        self.slider.setTickPosition(QtWidgets.QSlider.TicksBelow)  
-        layout.addWidget(self.slider)
-
-        self.slider_time = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        self.slider_time.setRange(0, 100)  
-        layout.addWidget(self.slider_time)
-        self.timer = QtCore.QTimer(self)
-        self.timer.timeout.connect(self.update_slider)
-        self.timer.start(1000)  
-        self.setLayout(layout)
-
-        self.button_repeat = QtWidgets.QPushButton("Повторить")
-        self.button_repeat.clicked.connect(self.repeat)
-        layout.addWidget(self.button_repeat)
-
-        self.setLayout(layout)
     def left_skip(self):
-        pass
+        self.current_index = (self.current_index - 1) % len(self.mp3_files)
+        self.play_current()
 
     def right_skip(self):
+        self.current_index = (self.current_index + 1) % len(self.mp3_files)
+        self.play_current()
+
+    def pause_b(self):
+        if self.player.state() == QMediaPlayer.PlayingState:
+            self.player.pause()
+        else:
+            self.player.play()
+
+    def volume_ch(self):
+        volume_ = self.volume.value()
+        self.player.setVolume(volume_)
+
+    def repeat(self):
+        self.play_current()
+
+    def volume_sound(self):
         pass
 
-    def pause(self):
-        pass  
-    
-    def volume(self):
-        pass
-    
-    def repeat(self):
-        pass
-    
     def update_slider(self):
-        current_value = self.slider_time.value()
-        if current_value < self.slider_time.maximum():
-            self.slider_time.setValue(current_value + 1)
+        current_value = self.time_slider.value()
+        if current_value < self.time_slider.maximum():
+            self.time_slider.setValue(current_value + 1)
         else:
-            self.slider_time.setValue(0)  
+            self.time_slider.setValue(0)
+
+
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)
     window = Window()
