@@ -15,6 +15,7 @@ class Window(QtWidgets.QMainWindow, Ui_MainWindow):
         self.ui.setupUi(self)
         self.folderpath = None
         self.menu = None
+        self.count = 0
         self.current_index = 0
         self.player = QMediaPlayer()
         self.ui.ope_folder.clicked.connect(self.select_folder)
@@ -24,7 +25,6 @@ class Window(QtWidgets.QMainWindow, Ui_MainWindow):
         self.ui.loop.clicked.connect(self.repeat)
         self.time_slider = self.ui.time_line
         self.timer = QtCore.QTimer(self)
-        self.timer.timeout.connect(self.update_slider)
         self.timer.start(1000)
         self.volume = self.ui.volume
         self.volume.setMinimum(0)
@@ -34,6 +34,11 @@ class Window(QtWidgets.QMainWindow, Ui_MainWindow):
         self.volume.setTickInterval(10)
         self.volume.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.volume.valueChanged.connect(self.volume_ch)
+        self.player.mediaStatusChanged.connect(self.media_status_changed)
+
+    def media_status_changed(self, status):
+        if status == QMediaPlayer.EndOfMedia:
+            self.right_skip()
 
     def select_folder(self):
         self.folderpath = QtWidgets.QFileDialog.getExistingDirectory(
@@ -59,10 +64,14 @@ class Window(QtWidgets.QMainWindow, Ui_MainWindow):
         self.play_current()
 
     def pause_b(self):
-        if self.player.state() == QMediaPlayer.PlayingState:
-            self.player.pause()
+        if self.count == 0:
+            self.count += 1
+            self.play_current()
         else:
-            self.player.play()
+            if self.player.state() == QMediaPlayer.PlayingState:
+                self.player.pause()
+            else:
+                self.player.play()
 
     def volume_ch(self):
         volume_ = self.volume.value()
@@ -73,13 +82,6 @@ class Window(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def volume_sound(self):
         pass
-
-    def update_slider(self):
-        current_value = self.time_slider.value()
-        if current_value < self.time_slider.maximum():
-            self.time_slider.setValue(current_value + 1)
-        else:
-            self.time_slider.setValue(0)
 
 
 if __name__ == '__main__':
